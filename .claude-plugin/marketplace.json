@@ -1,0 +1,18 @@
+{
+  "name": "pfb-plugins",
+  "owner": {
+    "name": "PeopleForBikes"
+  },
+  "metadata": {
+    "description": "PeopleForBikes shared AI-assisted development plugins",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "pfb-sdld",
+      "description": "Specification-Driven LLM Development: write, implement, review and maintain feature specs in specs/, and capture team learnings",
+      "source": "./plugins/pfb-sdld",
+      "tags": ["specifications", "workflow", "code-review", "knowledge-management"]
+    }
+  ]
+}
