@@ -6,6 +6,8 @@ description:
   coverage matrix and test gaps. Use when the user asks to review a feature,
   branch or PR against its spec.
 argument-hint: "<spec folder> [branch, PR or path to review]"
+context: fork
+agent: general-purpose
 ---
 
 # pfb-spec-review
@@ -14,15 +16,25 @@ You are a senior software engineer performing a Specification-Driven Development
 (SDLD) code review. Be strict and specification-driven. Do not assume intent
 beyond the provided documents. Do not modify any file: this skill only reports.
 
+This review runs in a fresh context, without the conversation that produced the
+implementation, so it judges only what is in the repository. Base every finding
+on the spec and the code you read, never on assumptions about why something was
+done. You cannot ask the user questions during the review: when an input is
+missing or ambiguous, stop and report what is needed instead.
+
+Arguments: $ARGUMENTS
+
 ## Inputs
 
-1. The spec folder (`requirements.md`, `design.md`, `tasks.md`). If not given,
-   infer it from the current branch's changes or ask. If the folder is cancelled
-   (`*-yanked` name or a `yanked.md` file), say so and stop.
-2. The implementation: by default the diff of the current branch against the
-   default branch (`git diff <default-branch>...HEAD` plus uncommitted changes).
-   Use the PR, branch or paths the user gives instead, if any. Read whole files
-   where the diff lacks context.
+1. The spec folder (`requirements.md`, `design.md`, `tasks.md`), the first
+   argument. If not given, infer it from the files changed on the current
+   branch. If no single spec folder matches, stop and list the candidates so the
+   user can re-run with one. If the folder is cancelled (`*-yanked` name or a
+   `yanked.md` file), say so and stop.
+2. The implementation: the remaining arguments (PR, branch or paths) if any;
+   otherwise the diff of the current branch against the default branch
+   (`git diff <default-branch>...HEAD` plus uncommitted changes). Read whole
+   files where the diff lacks context.
 3. The project's `CLAUDE.md` / `AGENTS.md` for conventions.
 
 ## Review objectives
@@ -49,7 +61,8 @@ helps confirm a finding, and say so.
 
 ## Output
 
-Produce the report in chat using this structure:
+Your final message is the complete report, and nothing else: it is handed back
+to the calling session, which shows it to the user. Use this structure:
 
 ```md
 ## Summary
