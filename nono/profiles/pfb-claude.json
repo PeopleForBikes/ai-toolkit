@@ -1,0 +1,47 @@
+{
+  "extends": ["nolabs-ai/claude"],
+  "meta": {
+    "name": "claude",
+    "version": "1.0.0",
+    "description": "Claude Code with additional project access"
+  },
+  "filesystem": {
+    "read": ["~/.config/gh", "/Library/Keychains", "~/.docker"],
+    "write": ["~/Library/Caches/brokenspoke-analyzer"],
+    "suppress_save_prompt": [
+      "~/",
+      "~/Library/Application Support/Chromium",
+      "~/Library/Application Support/Google/Chrome",
+      "~/Applications",
+      "~/.claude.json.tmp.*",
+      "/.nofollow",
+      "/.resolve",
+      "/.vol",
+      "/System",
+      "/Users",
+      "/usr"
+    ]
+  },
+  "network": {
+    "block": false,
+    "allow_http2": true,
+    "allow_domain": [
+      "127.0.0.1",
+      "api.anthropic.com",
+      "api.github.com",
+      "codeload.github.com",
+      "download.geofabrik.de",
+      "downloads.claude.ai",
+      "github.com",
+      "index.crates.io",
+      "mcp-proxy.anthropic.com",
+      "objects.githubusercontent.com",
+      "overpass-api.de",
+      "overpass.kumi.systems",
+      "overpass.openstreetmap.fr",
+      "platform.claude.com",
+      "statsig.anthropic.com"
+    ],
+    "open_port": [3000, 5432]
+  }
+}
