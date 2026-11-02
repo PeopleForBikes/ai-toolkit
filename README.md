@@ -1,7 +1,9 @@
-# PeopleForBikes AI Toolkit (experimental)
+# PeopleForBikes AI Toolkit
 
-The AI resources PeopleForBikes uses across its projects, shared with the team
-and with anyone who finds them useful:
+The AI resources PeopleForBikes uses across its projects: agent skills for a
+specification-driven workflow, shared Claude Code permission rules, and a
+sandbox profile to run AI agents safely. They are written for PeopleForBikes
+contributors and shared with anyone who finds them useful.
 
 | Resource                 | What it is                                                        | Where              |
 | :----------------------- | :---------------------------------------------------------------- | :----------------- |
@@ -11,11 +13,39 @@ and with anyone who finds them useful:
 
 Everything is released under the [MIT license](LICENSE).
 
-> [!NOTE]
->
-> This folder is an experiment hosted in the brokenspoke-analyzer repository.
-> Once stable, it is meant to become its own public repository; see
-> [Releasing to the organization](#releasing-to-the-organization).
+## Quick start
+
+Each resource can be used on its own.
+
+**Agent skills.** Inside Claude Code:
+
+```console
+/plugin marketplace add PeopleForBikes/ai-toolkit
+/plugin install pfb-sdld@pfb-plugins
+```
+
+Then try `/pfb-spec-new add a --version flag to the CLI`.
+
+**Claude Code settings.** From a clone of this repository, merge the shared
+rules into a project and commit the result:
+
+```console
+just sync-claude-settings path/to/project
+just check-claude-settings path/to/project
+```
+
+This also registers the `pfb-plugins` marketplace and enables `pfb-sdld` for the
+project, so everyone who opens it is offered the skills.
+
+**nono profiles.** From a clone of this repository:
+
+```console
+nono pull nolabs-ai/claude
+just install-nono-profiles
+nono run --profile pfb-claude claude
+```
+
+Review [SECURITY.md](SECURITY.md) for what the profile grants before installing.
 
 ## Agent skills: the `pfb-sdld` plugin
 
@@ -29,6 +59,20 @@ Everything is released under the [MIT license](LICENSE).
 | `pfb-spec-review`    | Strict review of an implementation against its spec (report only)                                          |
 | `pfb-spec-update`    | Sync a spec with what was built, or yank a cancelled feature or No-Go spike                                |
 | `pfb-learning`       | Capture a solved problem or team decision in `specs/learnings/`                                            |
+
+Examples:
+
+```console
+/pfb-spike is downloading OSM data per city faster than clipping the region?
+/pfb-spec-new add a --version flag to the CLI
+/pfb-spec-implement specs/0006-version-flag
+/pfb-spec-review specs/0006-version-flag
+/pfb-spec-update specs/0006-version-flag yank superseded by #1234
+/pfb-learning the SRID mismatch we just fixed in the stress SQL
+```
+
+The fully qualified names (`/pfb-sdld:pfb-spec-new`, …) also work and are what
+`/help` lists.
 
 `pfb-spec-implement` only runs when invoked explicitly. The other skills can
 also be picked up automatically when a request matches their description.
@@ -109,6 +153,39 @@ flowchart TD
     done -. lesson worth keeping .-> learning
 ```
 
+### Adopting the skills in a project
+
+- Make sure the project has a `specs/` folder. Adding
+  `specs/xxxx-feature-templates/` is optional: the templates bundled with
+  `pfb-spec-new` are used otherwise.
+- Make sure the project's `CLAUDE.md` / `AGENTS.md` names its quality command
+  (e.g. `just ci`, `cargo test`, `npm test`) and states that `docs/` is the
+  published documentation website and must not receive planning material.
+- Optionally mention `specs/learnings/` in `CLAUDE.md` / `AGENTS.md` up front;
+  otherwise `pfb-learning` offers to add the line the first time it runs.
+
+### Updating and removing the plugin
+
+```console
+claude plugin marketplace update pfb-plugins
+claude plugin update pfb-sdld@pfb-plugins
+```
+
+```console
+claude plugin uninstall pfb-sdld@pfb-plugins
+claude plugin marketplace remove pfb-plugins
+```
+
+### GitHub Copilot CLI
+
+Copilot CLI reads Claude-compatible plugin manifests. This has not been tested
+with these skills yet; please report how it goes.
+
+```console
+copilot plugin marketplace add PeopleForBikes/ai-toolkit
+copilot plugin install pfb-sdld@pfb-plugins
+```
+
 ## Claude Code settings
 
 Claude Code plugins cannot carry permission rules, and without an organization
@@ -121,6 +198,10 @@ PeopleForBikes project starts from:
 - **ask**: anything that changes a repository or GitHub (`git commit`,
   `git push`, `gh pr create`, …);
 - **deny**: reading `.env` files and `secrets/`, `curl`, `wget`, `sudo`.
+
+It also registers this repository as the `pfb-plugins` marketplace and enables
+`pfb-sdld`, so Claude Code offers to install the skills when a contributor
+trusts the project.
 
 A deny rule in a project's committed settings applies even if a contributor
 allows the same thing in their personal settings; allow rules only save prompts.
@@ -171,84 +252,6 @@ refuses to overwrite a local copy that differs and shows the difference; run
 `just install-nono-profiles force` to overwrite it. Inspect the fully resolved
 policy with `nono profile show pfb-claude`.
 
-## Trying it out
-
-While the toolkit lives in brokenspoke-analyzer, run the `just` recipes from
-this folder (`cd ai-toolkit`), and the commands below from the repository root.
-
-### Claude Code: load the skills from the working tree
-
-Start Claude Code with the plugin loaded directly from this folder. Edits to the
-skills are picked up the next time you start a session; nothing is installed.
-
-```console
-claude --plugin-dir ./ai-toolkit/plugins/pfb-sdld
-```
-
-Then, inside the session:
-
-```console
-/pfb-spike is downloading OSM data per city faster than clipping the region?
-/pfb-spec-new add a --version flag to the CLI
-/pfb-spec-implement specs/0006-version-flag
-/pfb-spec-review specs/0006-version-flag
-/pfb-spec-update specs/0006-version-flag yank superseded by #1234
-/pfb-learning the SRID mismatch we just fixed in the stress SQL
-```
-
-The fully qualified names (`/pfb-sdld:pfb-spec-new`, …) also work and are what
-`/help` lists.
-
-### Claude Code: install from the local marketplace
-
-This copies the plugin into Claude Code's plugin cache, so edits to this folder
-require an update to be picked up.
-
-```console
-claude plugin marketplace add ./ai-toolkit
-claude plugin install pfb-sdld@pfb-plugins
-```
-
-After changing a skill:
-
-```console
-claude plugin marketplace update pfb-plugins
-claude plugin update pfb-sdld@pfb-plugins
-```
-
-To remove it:
-
-```console
-claude plugin uninstall pfb-sdld@pfb-plugins
-claude plugin marketplace remove pfb-plugins
-```
-
-### GitHub Copilot CLI
-
-Copilot CLI reads Claude-compatible plugin manifests. This has not been tested
-with these skills yet; please report how it goes.
-
-```console
-copilot plugin marketplace add ./ai-toolkit
-copilot plugin install pfb-sdld@pfb-plugins
-```
-
-### Validating changes
-
-From this folder:
-
-```console
-just ci
-```
-
-It lints the Markdown, validates the plugin marketplace, the plugins and the
-nono profiles, and runs the tests of the helper scripts. To see the loaded
-skills and their token cost:
-
-```console
-claude --plugin-dir ./plugins/pfb-sdld plugin details pfb-sdld
-```
-
 ## Layout
 
 ```text
@@ -264,10 +267,11 @@ ai-toolkit/
 │       ├── pfb-spec-review/
 │       ├── pfb-spec-update/
 │       └── pfb-learning/             # SKILL.md + assets/learning-template.md
-├── claude/settings/base.json         # shared permission rules
+├── claude/settings/base.json         # shared permission rules + marketplace
 ├── nono/profiles/pfb-claude.json     # organization-wide sandbox profile
 ├── scripts/                          # settings merge script and its tests
 ├── justfile
+├── CLAUDE.md (AGENTS.md)             # instructions for AI agents
 ├── CONTRIBUTING.md · SECURITY.md · code-of-conduct.md · LICENSE
 ```
 
@@ -276,113 +280,34 @@ Each skill is a `SKILL.md` file: YAML frontmatter (`name`, `description`,
 `description` decides when the agent picks the skill on its own, so keep it
 specific.
 
-## Releasing to the organization
+## Contributing
 
-Once the team is happy with the toolkit, move it out of brokenspoke-analyzer
-into a dedicated public repository. The steps below use
-`PeopleForBikes/ai-toolkit` as the repository name.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the requirements, how to try changes
+locally and how to validate them (`just ci`).
 
-### 1. Create the dedicated repository, keeping history
+## Releasing
 
-Create an empty public `PeopleForBikes/ai-toolkit` repository on GitHub, then
-extract this folder with its commit history. `git subtree split` rewrites the
-history so `ai-toolkit/` becomes the repository root, which is where Claude Code
-looks for `.claude-plugin/marketplace.json` and GitHub looks for
-`.github/workflows/`.
+For maintainers:
 
-```console
-git subtree split --prefix=ai-toolkit -b ai-toolkit-export
-git push git@github.com:PeopleForBikes/ai-toolkit.git ai-toolkit-export:main
-git branch -D ai-toolkit-export
-```
-
-In the repository settings, enable **Private vulnerability reporting** (used by
-[SECURITY.md](SECURITY.md)) and GitHub Actions.
-
-### 2. Prepare the first release
-
-In the new repository:
-
-- Remove the "experimental" note at the top of this README, and update the
-  install commands to use `PeopleForBikes/ai-toolkit` instead of `./ai-toolkit`.
-- Set `version` in `plugins/pfb-sdld/.claude-plugin/plugin.json` (e.g. `1.0.0`).
-  Installed copies only pick up changes when this version changes, so bump it
-  for every release.
-- Add the marketplace to `claude/settings/base.json`, so syncing a project also
-  offers the skills to everyone who opens it:
-
-  ```json
-  {
-    "extraKnownMarketplaces": {
-      "pfb-plugins": {
-        "source": { "source": "github", "repo": "PeopleForBikes/ai-toolkit" }
-      }
-    },
-    "enabledPlugins": { "pfb-sdld@pfb-plugins": true }
-  }
-  ```
-
-- Make sure CI passes, then tag the release. `claude plugin tag` checks that
-  `plugin.json` and the marketplace entry agree, then creates a
-  `pfb-sdld--v<version>` tag:
-
-  ```console
-  claude plugin tag ./plugins/pfb-sdld --push
-  ```
-
-### 3. Adopt the toolkit in each project
-
-- Sync the shared settings into the project and commit the result:
-  `just sync-claude-settings path/to/project`. Add the project's own rules to
-  its `.claude/settings.json`.
-- Add `just check-claude-settings` (or the equivalent script call) to the
-  project's CI.
-- Make sure the project has a `specs/` folder. Adding
-  `specs/xxxx-feature-templates/` is optional: the templates bundled with
-  `pfb-spec-new` are used otherwise.
-- Make sure the project's `CLAUDE.md` / `AGENTS.md` names its quality command
-  (e.g. `just ci`, `cargo test`, `npm test`) and states that `docs/` is the
-  published documentation website and must not receive planning material.
-- Optionally mention `specs/learnings/` in `CLAUDE.md` / `AGENTS.md` up front;
-  otherwise `pfb-learning` offers to add the line the first time it runs.
-
-Contributors install the nono profile once per machine (see
-[nono profiles](#nono-profiles)). Copilot CLI users install the plugin once per
-machine:
-
-```console
-copilot plugin marketplace add PeopleForBikes/ai-toolkit
-copilot plugin install pfb-sdld@pfb-plugins
-```
-
-### 4. Clean up brokenspoke-analyzer
-
-Remove this `ai-toolkit/` folder from brokenspoke-analyzer and adopt the toolkit
-there like any other project (step 3), so there is a single source of truth.
-
-### 5. Link it from the documentation site
-
-Add a page to the general documentation site describing the toolkit and linking
-to the repository. Keep the files themselves in the repository, where they are
-versioned, validated and installable.
-
-### Shipping updates
-
-1. Change the toolkit through pull requests on `PeopleForBikes/ai-toolkit`.
-2. For the skills, bump `version` in `plugin.json` and tag the release (step 2).
-3. Contributors update with:
+1. Merge the changes through pull requests and make sure CI passes.
+2. Bump `version` in `plugins/pfb-sdld/.claude-plugin/plugin.json` and keep
+   `metadata.version` in `.claude-plugin/marketplace.json` consistent. Installed
+   copies only pick up changes when the version changes.
+3. Tag the release. `claude plugin tag` checks that `plugin.json` and the
+   marketplace entry agree, then creates and pushes a `pfb-sdld--v<version>`
+   tag:
 
    ```console
-   claude plugin marketplace update pfb-plugins
-   claude plugin update pfb-sdld@pfb-plugins
-   just install-nono-profiles force
+   claude plugin tag ./plugins/pfb-sdld --push
    ```
 
-   Projects pick up new shared permission rules the next time
-   `just sync-claude-settings` runs; their CI check flags when that is due.
+Users then update with:
 
-## Feedback
+```console
+claude plugin marketplace update pfb-plugins
+claude plugin update pfb-sdld@pfb-plugins
+just install-nono-profiles force
+```
 
-While experimenting, note where a skill asked too much or too little, wrote
-something it should not have, or missed a project convention, and adjust the
-corresponding `SKILL.md`.
+Projects pick up new shared permission rules the next time
+`just sync-claude-settings` runs; their CI check flags when that is due.

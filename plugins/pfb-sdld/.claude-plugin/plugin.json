@@ -1,6 +1,6 @@
 {
   "name": "pfb-sdld",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Specification-Driven LLM Development: write, implement, review and maintain feature specs in specs/, and capture team learnings",
   "author": {
     "name": "PeopleForBikes"

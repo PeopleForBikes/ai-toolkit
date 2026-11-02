@@ -1,0 +1,7 @@
+# Prettier wraps prose at 80 columns; tables cannot be wrapped.
+MD013:
+  tables: false
+# Templates and learnings carry a `title` field in their front matter that is
+# metadata, not the document heading.
+MD025:
+  front_matter_title: ""

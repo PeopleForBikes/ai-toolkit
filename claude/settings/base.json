@@ -41,5 +41,16 @@
       "Bash(wget:*)",
       "Bash(sudo:*)"
     ]
+  },
+  "extraKnownMarketplaces": {
+    "pfb-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "PeopleForBikes/ai-toolkit"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "pfb-sdld@pfb-plugins": true
   }
 }

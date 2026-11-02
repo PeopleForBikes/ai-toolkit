@@ -33,7 +33,9 @@ Before installing, review what you are opting into:
   policy.
 - **`claude/settings/base.json`** only allows read-only `git` and `gh` commands;
   anything that changes a repository or GitHub asks first, and reading `.env`
-  files, `secrets/`, `curl`, `wget` and `sudo` are denied.
+  files, `secrets/`, `curl`, `wget` and `sudo` are denied. It also registers
+  this repository as the `pfb-plugins` marketplace and enables the `pfb-sdld`
+  plugin, so syncing a project offers its skills to everyone who opens it.
 
 ## Supported versions
 
