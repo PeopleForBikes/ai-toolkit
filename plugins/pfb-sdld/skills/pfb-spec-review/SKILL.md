@@ -36,6 +36,10 @@ Arguments: $ARGUMENTS
    (`git diff <default-branch>...HEAD` plus uncommitted changes). Read whole
    files where the diff lacks context.
 3. The project's `CLAUDE.md` / `AGENTS.md` for conventions.
+4. `findings.md` in the spec folder, if present. Its entries explain deliberate,
+   non-obvious behavior: do not report behavior a finding documents as a defect,
+   but verify the code matches the finding, and report a finding that
+   contradicts the spec as a spec mismatch.
 
 ## Review objectives
 

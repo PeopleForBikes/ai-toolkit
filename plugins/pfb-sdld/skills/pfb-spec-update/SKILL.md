@@ -2,9 +2,9 @@
 name: pfb-spec-update
 description:
   Bring an existing feature specification in specs/NNNN-feature-name/ back in
-  line with reality after design changes, or mark a feature as cancelled
-  (yanked). Use when the implementation diverged from the spec, scope changed,
-  or a feature was dropped.
+  line with reality after design changes, or mark a feature or spike as
+  cancelled (yanked). Use when the implementation diverged from the spec, scope
+  changed, a feature was dropped, or a spike concluded No-Go.
 argument-hint: "<spec folder> [what changed | yank <reason>]"
 ---
 
@@ -42,9 +42,11 @@ never deleted.
 
 ## Mode B: cancel ("yank") a feature
 
-When the user says the feature is cancelled, superseded or abandoned:
+When the user says the feature is cancelled, superseded or abandoned, or a spike
+concluded No-Go:
 
-1. Ask for the reason and any link (PR, issue, replacing spec) if not given.
+1. Ask for the reason and any link (PR, issue, replacing spec) if not given. For
+   a spike, take the reason from its conclusion.
 2. Rename the folder by appending the `-yanked` suffix, keeping its number:
    `specs/NNNN-feature-name/` becomes `specs/NNNN-feature-name-yanked/`. Use
    `git mv` when the folder is tracked so history follows the rename. If the
@@ -57,7 +59,12 @@ When the user says the feature is cancelled, superseded or abandoned:
    This feature was yanked because <reason> [<link text>](url).
    ```
 
-4. Leave the three spec documents untouched.
+   For a spike, state the question it investigated, the verdict and the main
+   reasons, and link to the sections of `spike.md` that hold the evidence, so
+   teammates know why the team stopped and do not repeat the same investigation.
+
+4. Leave the existing documents (`spike.md`, `requirements.md`, `design.md`,
+   `tasks.md`, `findings.md`) untouched.
 5. Search the repository for links to the old folder path (other specs,
    `specs/learnings/`, code comments) and list them for the user; update them
    only inside `specs/`, never in `specs/README.md`.

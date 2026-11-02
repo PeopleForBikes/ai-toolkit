@@ -77,7 +77,9 @@ Pick exactly one category (it becomes the folder name):
 ## Step 3: Check for overlap
 
 Search `specs/learnings/` (titles, `tags`, `modules`, and body text) for entries
-about the same problem or decision.
+about the same problem or decision. Also search the features' `findings.md`
+files (`specs/*/findings.md`): when the learning generalizes an entry from one
+of them, keep that entry as is and link to it from the learning (in `related`).
 
 - **Same problem**: update the existing file instead of creating a new one. Add
   the new information, bump `updated`, and keep the history readable.

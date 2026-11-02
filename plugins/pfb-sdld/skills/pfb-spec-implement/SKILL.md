@@ -30,7 +30,8 @@ was cancelled: stop and tell the user.
 Also read the project's `CLAUDE.md` / `AGENTS.md` for conventions and the
 quality command (e.g. `just ci`, `cargo test`, `npm test`), and search
 `specs/learnings/` (if present) for entries related to the modules you will
-touch.
+touch. If the folder has a `spike.md` or a `findings.md` from earlier work, read
+them too.
 
 ## Rules
 
@@ -59,6 +60,22 @@ For each task in `tasks.md`, in order:
 4. At each `Checkpoint` task, run the project's full quality command and fix
    failures before continuing.
 
+## Recording findings
+
+Keep `findings.md` in the spec folder as the record of everything non-obvious
+learned while implementing: behavior that looks like a bug unless you know it is
+deliberate, library and tooling traps, and techniques that worked. It explains
+why the code behaves as it does after the conversation that produced it is gone.
+
+- Create it from `assets/findings-template.md` (in this skill) the first time
+  you learn something non-obvious; do not create an empty one.
+- Add an entry as soon as you learn it, without waiting to be asked: what the
+  rule is (with `path:line`), how it was caught, and what it cost, using
+  measured numbers where you have them.
+- When a later discovery proves an entry wrong or incomplete, correct the entry
+  and say what changed, rather than adding a contradicting one.
+- Skip the obvious: a typo or a routine fix is not a finding.
+
 ## When the spec is wrong or incomplete
 
 If implementing a task reveals that the spec is ambiguous, contradictory or
@@ -74,6 +91,8 @@ infeasible:
 - Run the full quality command one last time and report the result honestly,
   including failures.
 - Summarize: tasks completed, deviations from the spec (and where the spec was
-  updated), and anything left unchecked.
-- Suggest `pfb-spec-review` for a spec-compliance review, and `pfb-learning` if
-  a non-obvious problem was solved along the way.
+  updated), the entries added to `findings.md`, and anything left unchecked.
+- Remind the user that a reviewer should read `findings.md` and give feedback
+  before merging.
+- Suggest `pfb-spec-review` for a spec-compliance review, and `pfb-learning` for
+  findings that matter beyond this feature.

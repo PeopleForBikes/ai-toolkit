@@ -26,25 +26,35 @@ then write.
   code in the affected area, and relevant past specs before asking questions, so
   questions are about real gaps, not things the code answers.
 - **Never modify `specs/README.md`.** Read it for project rules only.
-- **Exactly three files** per feature: `requirements.md`, `design.md`,
-  `tasks.md`.
+- **Write exactly three files**: `requirements.md`, `design.md`, `tasks.md`. A
+  feature folder may also hold a `spike.md` (from `pfb-spike`) and, later, a
+  `findings.md` (from `pfb-spec-implement`); read them, never modify them.
 
 ## Step 1: Locate and number
 
-1. Find the next number: list directories in `specs/` matching `^[0-9]{4}-`
-   (include empty folders and cancelled `NNNN-*-yanked` ones), take the highest,
-   add one, zero-pad to four digits. If none exist, start at `0000`.
-2. Derive a short kebab-case slug from the feature name. Confirm
-   `specs/NNNN-slug/` with the user along with the first questions.
-3. Look for the templates in the repo first (`specs/xxxx-feature-templates/`).
+1. **Feature with a spike**: if the user points to an existing folder, or a
+   folder whose `spike.md` covers this feature exists, use that folder and its
+   number. If the spike's status is `No-Go`, or the folder is yanked, stop and
+   tell the user why, quoting the verdict.
+2. **New feature**: find the next number: list directories in `specs/` matching
+   `^[0-9]{4}-` (include empty folders and cancelled `NNNN-*-yanked` ones), take
+   the highest, add one, zero-pad to four digits. If none exist, start at
+   `0000`. Derive a short kebab-case slug from the feature name.
+3. Confirm the folder with the user along with the first questions.
+4. Look for the templates in the repo first (`specs/xxxx-feature-templates/`).
    If absent, use the copies bundled in this skill's `assets/` folder. The
    repo's templates win when both exist.
 
 ## Step 2: Gather context
 
 - Read `specs/README.md` if present for project-specific rules.
+- If the folder has a `spike.md`, read it fully. Its conclusion and
+  recommendation are the starting point for the requirements; its **Still Open**
+  and **Remaining Work** items are the first things to settle in the discovery
+  conversation. Do not re-open what the spike settled without a reason.
 - Skim past specs in `specs/NNNN-*/` touching the same area, including cancelled
-  ones (a `yanked.md` file explains why they were dropped).
+  ones (a `yanked.md` file explains why they were dropped), their `spike.md` and
+  their `findings.md`.
 - Search `specs/learnings/` (if it exists) for entries whose `tags`, `modules`
   or titles relate to this feature. Surface relevant ones to the user; they are
   past mistakes and decisions the team already paid for.

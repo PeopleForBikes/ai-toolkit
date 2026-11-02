@@ -21,13 +21,14 @@ Everything is released under the [MIT license](LICENSE).
 
 `pfb-sdld` packages our Specification-Driven LLM Development (SDLD) workflow.
 
-| Skill                | Purpose                                                                  |
-| :------------------- | :----------------------------------------------------------------------- |
-| `pfb-spec-new`       | Question-first drafting of `requirements.md`, `design.md`, `tasks.md`    |
-| `pfb-spec-implement` | Execute `tasks.md` in order, ticking tasks, running the project's checks |
-| `pfb-spec-review`    | Strict review of an implementation against its spec (report only)        |
-| `pfb-spec-update`    | Sync a spec with what was built, or yank a cancelled feature             |
-| `pfb-learning`       | Capture a solved problem or team decision in `specs/learnings/`          |
+| Skill                | Purpose                                                                                                    |
+| :------------------- | :--------------------------------------------------------------------------------------------------------- |
+| `pfb-spike`          | Research a possible feature with real experiments; records evidence and a Go / No-Go verdict in `spike.md` |
+| `pfb-spec-new`       | Interview-style conversation resulting in `requirements.md`, `design.md`, `tasks.md`                       |
+| `pfb-spec-implement` | Execute `tasks.md` in order, ticking tasks, running the project's checks, recording `findings.md`          |
+| `pfb-spec-review`    | Strict review of an implementation against its spec (report only)                                          |
+| `pfb-spec-update`    | Sync a spec with what was built, or yank a cancelled feature or No-Go spike                                |
+| `pfb-learning`       | Capture a solved problem or team decision in `specs/learnings/`                                            |
 
 `pfb-spec-implement` only runs when invoked explicitly. The other skills can
 also be picked up automatically when a request matches their description.
@@ -47,10 +48,19 @@ new session before reviewing there.
 ### Conventions the skills rely on
 
 - Feature specs live in `specs/NNNN-feature-name/` (four-digit, sequential),
-  each with exactly `requirements.md`, `design.md` and `tasks.md`.
+  each with `requirements.md`, `design.md` and `tasks.md`. A folder may also
+  hold:
+  - `spike.md`: the research done before specifying the feature (`pfb-spike`),
+    ending in a Go, Conditional Go or No-Go verdict;
+  - `findings.md`: everything non-obvious learned while implementing it
+    (`pfb-spec-implement`), reviewed by a teammate at the end.
+- Every spike is numbered like a feature. A Go spike's folder becomes the
+  feature's folder; `pfb-spec-new` adds the three documents next to `spike.md`.
 - Requirements use user stories with EARS acceptance criteria.
 - Cancelled features are renamed to `specs/NNNN-feature-name-yanked/` and gain a
-  `yanked.md` explaining why. Their number stays reserved.
+  `yanked.md` explaining why. Their number stays reserved. A No-Go spike is
+  yanked the same way and keeps only `spike.md` and `yanked.md`, so teammates
+  know why the team stopped and do not repeat the investigation.
 - Learnings live in `specs/learnings/<category>/<slug>.md`.
 - `specs/README.md` is never modified by the skills.
 - `docs/` is reserved for the published documentation website. No skill writes
@@ -64,15 +74,26 @@ new session before reviewing there.
 
 ```mermaid
 flowchart TD
+    idea(["Feature idea"])
+    sure{"Clear what to build<br/>and that it is worth it?"}
+    spike["/pfb-spike<br/>experiments → spike.md"]
+    verdict{"Reviewer feedback<br/>on the verdict"}
     new["/pfb-spec-new<br/>requirements.md → design.md → tasks.md"]
     senior{"Senior engineer<br/>reviews the specs"}
-    implement["/pfb-spec-implement<br/>execute tasks.md"]
+    implement["/pfb-spec-implement<br/>execute tasks.md, record findings.md"]
     review{"/pfb-spec-review<br/>report against the spec"}
     update["/pfb-spec-update<br/>sync design.md and tasks.md"]
     yank["/pfb-spec-update yank<br/>NNNN-name-yanked/ + yanked.md"]
     learning["/pfb-learning<br/>specs/learnings/"]
+    final{"Reviewer feedback<br/>on code and findings.md"}
     done(["Merge"])
 
+    idea --> sure
+    sure -- yes --> new
+    sure -- no --> spike
+    spike --> verdict
+    verdict -- Go / Conditional Go --> new
+    verdict -- No-Go --> yank
     new --> senior
     senior -- changes requested --> new
     senior -- approved --> implement
@@ -81,7 +102,9 @@ flowchart TD
     review -- needs revision --> implement
     review -- spec diverged --> update
     update --> review
-    review -- pass --> done
+    review -- pass --> final
+    final -- changes requested --> implement
+    final -- approved --> done
     implement -. non-obvious problem solved .-> learning
     done -. lesson worth keeping .-> learning
 ```
@@ -165,6 +188,7 @@ claude --plugin-dir ./ai-toolkit/plugins/pfb-sdld
 Then, inside the session:
 
 ```console
+/pfb-spike is downloading OSM data per city faster than clipping the region?
 /pfb-spec-new add a --version flag to the CLI
 /pfb-spec-implement specs/0006-version-flag
 /pfb-spec-review specs/0006-version-flag
@@ -234,8 +258,9 @@ ai-toolkit/
 ├── plugins/pfb-sdld/
 │   ├── .claude-plugin/plugin.json
 │   └── skills/
+│       ├── pfb-spike/                # SKILL.md + assets/spike-template.md
 │       ├── pfb-spec-new/             # SKILL.md + assets/ (spec templates)
-│       ├── pfb-spec-implement/
+│       ├── pfb-spec-implement/       # SKILL.md + assets/findings-template.md
 │       ├── pfb-spec-review/
 │       ├── pfb-spec-update/
 │       └── pfb-learning/             # SKILL.md + assets/learning-template.md
