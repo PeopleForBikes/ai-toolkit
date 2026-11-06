@@ -23,9 +23,10 @@ nobody repeats the same investigation without knowing the outcome.
 
 ## Hard rules
 
-- **Write only `spike.md` inside the spike's `specs/NNNN-*/` folder.** Never
-  write under `docs/` (it is the project's published documentation website),
-  never modify `specs/README.md`, and do not change the project's code.
+- **Write only `spike.md` inside the spike's `specs/NNNN-*/` folder**, at the
+  root or in a workspace member. Never write under `docs/` (it is the project's
+  published documentation website), never modify a `specs/README.md`, and do not
+  change the project's code.
 - **Experiments run outside the repository** (in the agent's scratch or
   temporary directory) unless the user agrees on another location. Nothing from
   an experiment is committed except what `spike.md` records.
@@ -40,24 +41,39 @@ nobody repeats the same investigation without knowing the outcome.
 
 ## Step 1: Locate and number
 
-1. Find the next number: list directories in `specs/` matching `^[0-9]{4}-`
-   (include empty folders and cancelled `NNNN-*-yanked` ones), take the highest,
-   add one, zero-pad to four digits. If none exist, start at `0000`. Every spike
-   gets a number, whatever its outcome.
-2. Derive a short kebab-case slug from the topic. Confirm `specs/NNNN-slug/`
-   with the user along with the first questions.
-3. Use `assets/spike-template.md` from this skill for the document.
+1. Choose the location: check whether the repo is a workspace (`[workspace]` in
+   `Cargo.toml`, `[tool.uv.workspace]` in `pyproject.toml`, `workspaces` in
+   `package.json`, `pnpm-workspace.yaml`, `go.work`). A question about one
+   member goes in `<member>/specs/`. Anything else (several members, the repo as
+   a whole, or not a workspace) goes in the root `specs/`.
+2. Find the next number: list directories in the chosen `specs/` folder matching
+   `^[0-9]{4}-` (include empty folders and cancelled `NNNN-*-yanked` ones), take
+   the highest, add one, zero-pad to four digits. If none exist, start at
+   `0000`. Each `specs/` folder numbers on its own. Every spike gets a number,
+   whatever its outcome.
+3. Derive a short kebab-case slug from the topic. Confirm the folder's
+   repo-relative path with the user along with the first questions.
+4. Use `assets/spike-template.md` from this skill for the document.
 
 ## Step 2: Gather context
 
-- Read the project's `CLAUDE.md` / `AGENTS.md`, `specs/README.md` (read only),
-  and the code in the affected area.
-- Look for earlier work on the same question: `spike.md` files in other
-  `specs/NNNN-*/` folders, **especially yanked ones**, whose `yanked.md`
-  explains why the team stopped. If an earlier spike already answered the
-  question, tell the user before doing anything else and ask what is different
-  this time.
-- Search `specs/learnings/` and `specs/*/findings.md` for related entries.
+- Read the project's `CLAUDE.md` / `AGENTS.md`, the root `specs/README.md` (read
+  only), the member's own versions of these files if it has them, and the code
+  in the affected area.
+- Look for earlier work on the same question without reading it all. Search the
+  spike's member and the root `specs/`, and other members only if the question
+  touches them:
+  1. List the `NNNN-*` folder names and note those that sound related,
+     **especially yanked ones**, whose `yanked.md` explains why the team
+     stopped.
+  2. Grep the `specs/learnings/` frontmatter (`title`, `tags`, `modules`) and
+     the `spike.md` and `findings.md` files for the question's keywords and
+     module paths.
+  3. Open only what matched, at most five files. If more matched than you read,
+     say so.
+
+  If an earlier spike already answered the question, tell the user before doing
+  anything else and ask what is different this time.
 
 ## Step 3: Interview
 

@@ -41,12 +41,15 @@ See `README.md` for the full layout and user-facing documentation, and
 - All skills keep the `pfb-` prefix. A skill's `description` decides when agents
   pick it on their own: keep it specific.
 - The skills work on spec folders named `specs/NNNN-feature-name/` (four digits,
-  sequential) holding `requirements.md` (user stories + EARS acceptance
-  criteria), `design.md`, `tasks.md`, and optionally `spike.md` and
-  `findings.md`. Cancelled features and No-Go spikes are renamed with a
-  `-yanked` suffix and gain a `yanked.md`.
-- Skills never modify `specs/README.md` and never write planning material under
-  `docs/`, which is reserved for the published documentation website.
+  sequential within that `specs/` folder) holding `requirements.md` (user
+  stories + EARS acceptance criteria), `design.md`, `tasks.md`, and optionally
+  `spike.md` and `findings.md`. Cancelled features and No-Go spikes are renamed
+  with a `-yanked` suffix and gain a `yanked.md`.
+- In a workspace, specs and learnings that concern one member live in
+  `<member>/specs/`; everything else lives in the root `specs/`. Skills search
+  by listing names and grepping, then open only what matches.
+- Skills never modify a `specs/README.md` and never write planning material
+  under `docs/`, which is reserved for the published documentation website.
 - When a change should reach users, bump `version` in
   `plugins/pfb-sdld/.claude-plugin/plugin.json` and keep `metadata.version` in
   `.claude-plugin/marketplace.json` consistent.
