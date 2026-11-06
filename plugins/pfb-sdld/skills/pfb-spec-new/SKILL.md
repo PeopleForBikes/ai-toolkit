@@ -76,6 +76,7 @@ then write.
 
   Surface relevant learnings to the user; they are past mistakes and decisions
   the team already paid for.
+
 - Identify the project's stack, test layout and quality command (e.g. `just ci`,
   `cargo test`, `npm test`) from the instruction files and build files. Never
   assume a stack.
