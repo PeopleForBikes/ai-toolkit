@@ -26,16 +26,17 @@ Arguments: $ARGUMENTS
 
 ## Inputs
 
-1. The spec folder (`requirements.md`, `design.md`, `tasks.md`), the first
-   argument. If not given, infer it from the files changed on the current
-   branch. If no single spec folder matches, stop and list the candidates so the
-   user can re-run with one. If the folder is cancelled (`*-yanked` name or a
-   `yanked.md` file), say so and stop.
+1. The spec folder (`requirements.md`, `design.md`, `tasks.md`), at the root or
+   in a workspace member, the first argument. If not given, infer it from the
+   files changed on the current branch. If no single spec folder matches, stop
+   and list the candidates so the user can re-run with one. If the folder is
+   cancelled (`*-yanked` name or a `yanked.md` file), say so and stop.
 2. The implementation: the remaining arguments (PR, branch or paths) if any;
    otherwise the diff of the current branch against the default branch
    (`git diff <default-branch>...HEAD` plus uncommitted changes). Read whole
    files where the diff lacks context.
-3. The project's `CLAUDE.md` / `AGENTS.md` for conventions.
+3. The project's `CLAUDE.md` / `AGENTS.md`, and the member's if it has one, for
+   conventions.
 4. `findings.md` in the spec folder, if present. Its entries explain deliberate,
    non-obvious behavior: do not report behavior a finding documents as a defect,
    but verify the code matches the finding, and report a finding that

@@ -15,10 +15,10 @@ Specification-Driven Development (SDLD).
 
 ## Inputs
 
-The spec folder given as argument. If none is given, list `specs/NNNN-*/`
-folders (excluding cancelled `*-yanked` ones) whose `tasks.md` has unchecked
-items and ask which one. Read all three documents fully before changing any
-code:
+The spec folder given as argument. If none is given, list the `specs/NNNN-*/`
+folders at the root and in each workspace member (excluding cancelled `*-yanked`
+ones) whose `tasks.md` has unchecked items and ask which one. Read all three
+documents fully before changing any code:
 
 - `requirements.md` is the source of truth for **behavior**.
 - `design.md` is the source of truth for **architecture and constraints**.
@@ -27,11 +27,12 @@ code:
 If the folder name ends with `-yanked` or it contains `yanked.md`, the feature
 was cancelled: stop and tell the user.
 
-Also read the project's `CLAUDE.md` / `AGENTS.md` for conventions and the
-quality command (e.g. `just ci`, `cargo test`, `npm test`), and search
-`specs/learnings/` (if present) for entries related to the modules you will
-touch. If the folder has a `spike.md` or a `findings.md` from earlier work, read
-them too.
+Also read the project's `CLAUDE.md` / `AGENTS.md`, and the member's if it has
+one, for conventions and the quality command (e.g. `just ci`, `cargo test`,
+`npm test`). Grep the frontmatter (`title`, `tags`, `modules`) in
+`specs/learnings/` (if present), in the feature's member and at the root, for
+the modules you will touch, and open only the entries that match. If the folder
+has a `spike.md` or a `findings.md` from earlier work, read them too.
 
 ## Rules
 
@@ -47,7 +48,7 @@ them too.
 - Never write planning or spec material under `docs/`; it is the published
   documentation website. Only touch `docs/` when a task explicitly calls for
   user-facing documentation changes.
-- Never modify `specs/README.md`.
+- Never modify a `specs/README.md`.
 - Do not commit or push unless the user asks.
 
 ## Execution loop
@@ -94,5 +95,7 @@ infeasible:
   updated), the entries added to `findings.md`, and anything left unchecked.
 - Remind the user that a reviewer should read `findings.md` and give feedback
   before merging.
-- Suggest `pfb-spec-review` for a spec-compliance review, and `pfb-learning` for
-  findings that matter beyond this feature.
+- Suggest `pfb-spec-review` for a spec-compliance review.
+- Tell the user that the last step, once the reviewer approves and before
+  merging, is `/pfb-learning <spec folder>`: it goes through `findings.md` and
+  proposes which entries to keep as learnings.

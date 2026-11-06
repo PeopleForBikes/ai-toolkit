@@ -16,8 +16,9 @@ then write.
 
 ## Hard rules
 
-- **Write only inside `specs/`.** Never create or modify anything under `docs/`
-  (it is the project's published documentation website) or any other folder.
+- **Write only inside the feature's folder**, under the `specs/` folder chosen
+  in Step 1. Never create or modify anything under `docs/` (it is the project's
+  published documentation website) or any other folder.
 - **Do not invent.** If a detail is missing, ask. Do not add features,
   libraries, or constraints the user did not state or the codebase does not
   already establish. Mark anything genuinely unresolved as an open question in
@@ -25,7 +26,8 @@ then write.
 - **Ground in the repo.** Read the project's `CLAUDE.md` / `AGENTS.md`, existing
   code in the affected area, and relevant past specs before asking questions, so
   questions are about real gaps, not things the code answers.
-- **Never modify `specs/README.md`.** Read it for project rules only.
+- **Never modify a `specs/README.md`**, at any level. Read them for project
+  rules only.
 - **Write exactly three files**: `requirements.md`, `design.md`, `tasks.md`. A
   feature folder may also hold a `spike.md` (from `pfb-spike`) and, later, a
   `findings.md` (from `pfb-spec-implement`); read them, never modify them.
@@ -36,28 +38,44 @@ then write.
    folder whose `spike.md` covers this feature exists, use that folder and its
    number. If the spike's status is `No-Go`, or the folder is yanked, stop and
    tell the user why, quoting the verdict.
-2. **New feature**: find the next number: list directories in `specs/` matching
-   `^[0-9]{4}-` (include empty folders and cancelled `NNNN-*-yanked` ones), take
-   the highest, add one, zero-pad to four digits. If none exist, start at
-   `0000`. Derive a short kebab-case slug from the feature name.
-3. Confirm the folder with the user along with the first questions.
-4. Look for the templates in the repo first (`specs/xxxx-feature-templates/`).
-   If absent, use the copies bundled in this skill's `assets/` folder. The
-   repo's templates win when both exist.
+2. **New feature, location**: check whether the repo is a workspace
+   (`[workspace]` in `Cargo.toml`, `[tool.uv.workspace]` in `pyproject.toml`,
+   `workspaces` in `package.json`, `pnpm-workspace.yaml`, `go.work`). A feature
+   that belongs to one member goes in `<member>/specs/`. Anything else (several
+   members, the repo as a whole, or not a workspace) goes in the root `specs/`.
+3. **New feature, number**: find the next number: list directories in the chosen
+   `specs/` folder matching `^[0-9]{4}-` (include empty folders and cancelled
+   `NNNN-*-yanked` ones), take the highest, add one, zero-pad to four digits. If
+   none exist, start at `0000`. Each `specs/` folder numbers on its own, so
+   always refer to a feature by its full repo-relative path. Derive a short
+   kebab-case slug from the feature name.
+4. Confirm the folder with the user along with the first questions.
+5. Look for the templates in the repo first (`specs/xxxx-feature-templates/` at
+   the root). If absent, use the copies bundled in this skill's `assets/`
+   folder. The repo's templates win when both exist.
 
 ## Step 2: Gather context
 
-- Read `specs/README.md` if present for project-specific rules.
+- Read the root `specs/README.md` and the member's, if present, for
+  project-specific rules. Also read the member's `CLAUDE.md` / `AGENTS.md` if it
+  has one.
 - If the folder has a `spike.md`, read it fully. Its conclusion and
   recommendation are the starting point for the requirements; its **Still Open**
   and **Remaining Work** items are the first things to settle in the discovery
   conversation. Do not re-open what the spike settled without a reason.
-- Skim past specs in `specs/NNNN-*/` touching the same area, including cancelled
-  ones (a `yanked.md` file explains why they were dropped), their `spike.md` and
-  their `findings.md`.
-- Search `specs/learnings/` (if it exists) for entries whose `tags`, `modules`
-  or titles relate to this feature. Surface relevant ones to the user; they are
-  past mistakes and decisions the team already paid for.
+- Look for related past work without reading it all. Search the feature's member
+  and the root `specs/`, and other members only if the feature touches them:
+  1. List the `NNNN-*` folder names, including cancelled ones (a `yanked.md`
+     file explains why they were dropped), and note those that sound related.
+  2. Grep the `specs/learnings/` frontmatter (`title`, `tags`, `modules`) and
+     the `findings.md` files for the feature's keywords and module paths.
+  3. Open only what matched, at most five files. For a past spec, start with the
+     introduction of `requirements.md` or the conclusion of `spike.md`, and read
+     further only if it bears on this feature. If more matched than you read,
+     say so.
+
+  Surface relevant learnings to the user; they are past mistakes and decisions
+  the team already paid for.
 - Identify the project's stack, test layout and quality command (e.g. `just ci`,
   `cargo test`, `npm test`) from the instruction files and build files. Never
   assume a stack.
@@ -97,9 +115,10 @@ Each document builds on the previous one.
    dependencies. Reference real modules and paths from the repo. Prefer reusing
    existing code over new abstractions.
 3. **`tasks.md` (STEPS)**: ordered checklist (`- [ ] 1.`, `- [ ] 1.1`) with
-   exact file paths, each task ending with `_Requirements: X.Y_` linking back to
-   acceptance criteria. Include tests in the same tasks as the code they cover,
-   and add `Checkpoint` tasks that run the project's quality command.
+   exact repo-relative file paths, each task ending with `_Requirements: X.Y_`
+   linking back to acceptance criteria. Include tests in the same tasks as the
+   code they cover, and add `Checkpoint` tasks that run the project's quality
+   command.
 
 After writing each document, give a short summary of its key decisions and any
 open questions, and invite corrections before moving on. Apply corrections to

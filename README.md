@@ -58,7 +58,7 @@ Review [SECURITY.md](SECURITY.md) for what the profile grants before installing.
 | `pfb-spec-implement` | Execute `tasks.md` in order, ticking tasks, running the project's checks, recording `findings.md`          |
 | `pfb-spec-review`    | Strict review of an implementation against its spec (report only)                                          |
 | `pfb-spec-update`    | Sync a spec with what was built, or yank a cancelled feature or No-Go spike                                |
-| `pfb-learning`       | Capture a solved problem or team decision in `specs/learnings/`                                            |
+| `pfb-learning`       | Capture a lesson in `specs/learnings/`, or review an approved feature's `findings.md` before merging       |
 
 Examples:
 
@@ -68,6 +68,7 @@ Examples:
 /pfb-spec-implement specs/0006-version-flag
 /pfb-spec-review specs/0006-version-flag
 /pfb-spec-update specs/0006-version-flag yank superseded by #1234
+/pfb-learning specs/0006-version-flag
 /pfb-learning the SRID mismatch we just fixed in the stress SQL
 ```
 
@@ -91,9 +92,14 @@ new session before reviewing there.
 
 ### Conventions the skills rely on
 
-- Feature specs live in `specs/NNNN-feature-name/` (four-digit, sequential),
-  each with `requirements.md`, `design.md` and `tasks.md`. A folder may also
-  hold:
+- In a workspace, a feature that belongs to one member lives in
+  `<member>/specs/`. Work spanning several members, and repositories that are
+  not workspaces, use the root `specs/`. Existing folders stay where they are.
+  Searches cover the current member and the root, and other members only when
+  the work touches them.
+- Feature specs live in `specs/NNNN-feature-name/` (four digits, sequential
+  within that `specs/` folder, so always use the full path), each with
+  `requirements.md`, `design.md` and `tasks.md`. A folder may also hold:
   - `spike.md`: the research done before specifying the feature (`pfb-spike`),
     ending in a Go, Conditional Go or No-Go verdict;
   - `findings.md`: everything non-obvious learned while implementing it
@@ -105,14 +111,15 @@ new session before reviewing there.
   `yanked.md` explaining why. Their number stays reserved. A No-Go spike is
   yanked the same way and keeps only `spike.md` and `yanked.md`, so teammates
   know why the team stopped and do not repeat the investigation.
-- Learnings live in `specs/learnings/<category>/<slug>.md`.
-- `specs/README.md` is never modified by the skills.
+- Learnings live in `specs/learnings/<category>/<slug>.md`: in the member when
+  they concern only that member, at the root otherwise.
+- `specs/README.md` is never modified by the skills, at any level.
 - `docs/` is reserved for the published documentation website. No skill writes
   planning material there.
 - Each repository's `CLAUDE.md` / `AGENTS.md` documents its stack and its
   quality command (e.g. `just ci`), which the skills read instead of assuming.
-- Repo templates in `specs/xxxx-feature-templates/` override the ones bundled
-  with `pfb-spec-new`.
+- Repo templates in the root `specs/xxxx-feature-templates/` override the ones
+  bundled with `pfb-spec-new`.
 
 ### Typical flow
 
@@ -128,7 +135,7 @@ flowchart TD
     review{"/pfb-spec-review<br/>report against the spec"}
     update["/pfb-spec-update<br/>sync design.md and tasks.md"]
     yank["/pfb-spec-update yank<br/>NNNN-name-yanked/ + yanked.md"]
-    learning["/pfb-learning<br/>specs/learnings/"]
+    learning["/pfb-learning specs/NNNN-name<br/>review findings.md → specs/learnings/"]
     final{"Reviewer feedback<br/>on code and findings.md"}
     done(["Merge"])
 
@@ -148,10 +155,18 @@ flowchart TD
     update --> review
     review -- pass --> final
     final -- changes requested --> implement
-    final -- approved --> done
-    implement -. non-obvious problem solved .-> learning
-    done -. lesson worth keeping .-> learning
+    final -- approved --> learning
+    learning --> done
 ```
+
+The last step before merging is `/pfb-learning` on the feature's spec folder. It
+goes through `findings.md`, proposes which entries matter beyond this feature,
+and writes the ones you select, so the learnings ship in the same pull request.
+Selecting none is a normal outcome. This step is not automated: Claude Code has
+no hook event for a feature being accepted, so the feature's author runs it.
+
+`/pfb-learning` also works at any other time, without a spec folder, to capture
+one lesson from the current session.
 
 ### Adopting the skills in a project
 

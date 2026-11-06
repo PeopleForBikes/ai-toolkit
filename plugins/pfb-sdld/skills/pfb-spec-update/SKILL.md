@@ -16,9 +16,9 @@ never deleted.
 
 ## Hard rules
 
-- Write only inside the given `specs/NNNN-*/` folder (and rename it when
-  yanking). Never touch `docs/`.
-- Never modify `specs/README.md`.
+- Write only inside the given `specs/NNNN-*/` folder, at the root or in a
+  workspace member (and rename it when yanking). Never touch `docs/`.
+- Never modify a `specs/README.md`.
 - Never delete a spec folder or its files.
 - Do not change `requirements.md` without the user's explicit agreement:
   requirements changes are scope changes. Show the proposed wording first.
@@ -47,9 +47,9 @@ concluded No-Go:
 
 1. Ask for the reason and any link (PR, issue, replacing spec) if not given. For
    a spike, take the reason from its conclusion.
-2. Rename the folder by appending the `-yanked` suffix, keeping its number:
-   `specs/NNNN-feature-name/` becomes `specs/NNNN-feature-name-yanked/`. Use
-   `git mv` when the folder is tracked so history follows the rename. If the
+2. Rename the folder in place by appending the `-yanked` suffix, keeping its
+   number: `specs/NNNN-feature-name/` becomes `specs/NNNN-feature-name-yanked/`.
+   Use `git mv` when the folder is tracked so history follows the rename. If the
    name already ends with `-yanked`, do not rename it again.
 3. Create `yanked.md` in the renamed folder:
 
@@ -65,9 +65,9 @@ concluded No-Go:
 
 4. Leave the existing documents (`spike.md`, `requirements.md`, `design.md`,
    `tasks.md`, `findings.md`) untouched.
-5. Search the repository for links to the old folder path (other specs,
-   `specs/learnings/`, code comments) and list them for the user; update them
-   only inside `specs/`, never in `specs/README.md`.
+5. Search the repository for links to the old folder's full path (other specs,
+   `specs/learnings/` at any level, code comments) and list them for the user;
+   update them only inside `specs/` folders, never in a `specs/README.md`.
 
 ## Finish
 
