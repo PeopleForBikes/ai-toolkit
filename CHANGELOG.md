@@ -1,0 +1,73 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html). Versions follow the
+`pfb-sdld` plugin version and are tagged `pfb-sdld--v<version>`.
+
+## [Unreleased]
+
+## [1.1.0] - 2026-11-06
+
+### Added
+
+- `pfb-learning` feature review mode, which works from a feature's `findings.md`
+  in a later session.
+- `just` recipes to run Claude Code in the nono sandbox: `nono-claude-login` to
+  log in, `nono-claude` to run Claude with the `pfb-claude` profile, and
+  `nono-claude-danger` to run it with `--dangerously-skip-permissions` inside
+  the sandbox.
+
+### Changed
+
+- In a workspace, specs and learnings that concern a single member now live in
+  `<member>/specs/`; everything else stays in the root `specs/`. Numbering is
+  per `specs/` folder, so features are referred to by their full path. Existing
+  root folders stay where they are and are still searched.
+- Skills list folder names and grep before opening files, to reduce token use as
+  features and learnings accumulate. `pfb-spec-new` and `pfb-spike` open at most
+  five files.
+- `pfb-learning` is now the last step before merging a feature. It stays a
+  manual step.
+
+## [1.0.0] - 2026-11-02
+
+### Added
+
+- `pfb-sdld` Claude Code plugin implementing the Specification-Driven LLM
+  Development workflow, published through the `pfb-plugins` marketplace, with
+  six skills:
+  - `pfb-spike`: research a possible feature through an interview and real,
+    reproducible experiments, ending in a Go, Conditional Go or No-Go verdict in
+    `specs/NNNN-feature-name/spike.md`.
+  - `pfb-spec-new`: draft `requirements.md`, `design.md` and `tasks.md` for a
+    new feature, building on a spike's conclusion when there is one.
+  - `pfb-spec-implement`: implement a specification, recording what is learned
+    along the way in `findings.md`.
+  - `pfb-spec-review`: review an implementation strictly against its
+    specification, in a fresh context that does not inherit the current
+    conversation.
+  - `pfb-spec-update`: bring a specification back in line with reality, or yank
+    a cancelled feature or a No-Go spike.
+  - `pfb-learning`: capture solved problems and team decisions in
+    `specs/learnings/<category>/`.
+- Shared Claude Code permission rules in `claude/settings/base.json`, which also
+  register the `pfb-plugins` marketplace and enable `pfb-sdld`.
+- `scripts/sync_claude_settings.py` (standard library only, with tests) to merge
+  the shared settings into a project's `.claude/settings.json` or check that a
+  project is in sync.
+- Organization-wide nono sandbox profile `nono/profiles/pfb-claude.json`.
+- `justfile` recipes to lint, validate, test, sync the shared settings and
+  install the nono profiles, and a CI workflow running them.
+- Documentation: `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, the code of
+  conduct, and `CLAUDE.md` (with `AGENTS.md` as a symlink) for AI agents.
+- MIT license.
+
+[unreleased]:
+  https://github.com/PeopleForBikes/ai-toolkit/compare/pfb-sdld--v1.1.0...HEAD
+[1.1.0]:
+  https://github.com/PeopleForBikes/ai-toolkit/compare/pfb-sdld--v1.0.0...pfb-sdld--v1.1.0
+[1.0.0]:
+  https://github.com/PeopleForBikes/ai-toolkit/releases/tag/pfb-sdld--v1.0.0

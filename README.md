@@ -308,7 +308,9 @@ For maintainers:
 2. Bump `version` in `plugins/pfb-sdld/.claude-plugin/plugin.json` and keep
    `metadata.version` in `.claude-plugin/marketplace.json` consistent. Installed
    copies only pick up changes when the version changes.
-3. Tag the release. `claude plugin tag` checks that `plugin.json` and the
+3. In [CHANGELOG.md](CHANGELOG.md), move the `Unreleased` entries under a new
+   heading for the version and date, and update the comparison links.
+4. Tag the release. `claude plugin tag` checks that `plugin.json` and the
    marketplace entry agree, then creates and pushes a `pfb-sdld--v<version>`
    tag:
 

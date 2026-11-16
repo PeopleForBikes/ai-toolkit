@@ -53,6 +53,8 @@ See `README.md` for the full layout and user-facing documentation, and
 - When a change should reach users, bump `version` in
   `plugins/pfb-sdld/.claude-plugin/plugin.json` and keep `metadata.version` in
   `.claude-plugin/marketplace.json` consistent.
+- Record notable changes under `Unreleased` in `CHANGELOG.md`
+  ([Keep a Changelog](https://keepachangelog.com/en/1.1.0/)).
 - Contributors use their own Claude plans: there are no managed settings, so
   shared rules only travel through `claude/settings/base.json`.
 - Personal preferences (model, theme, …) do not belong in the base settings.

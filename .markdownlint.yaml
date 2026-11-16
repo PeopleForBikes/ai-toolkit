@@ -5,3 +5,6 @@ MD013:
 # metadata, not the document heading.
 MD025:
   front_matter_title: ""
+# The changelog repeats "Added", "Changed", … under each release.
+MD024:
+  siblings_only: true
