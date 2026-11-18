@@ -9,6 +9,43 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `scripts/test_nono_profiles.py`, run by `just ci`: fails when a change to the
+  `pfb-claude` profile adds a wildcard host, lets `github.com` accept a push,
+  widens what the agent's GitHub token is used for, lets the developer's GitHub
+  tokens into the sandbox, re-adds an ineffective grant, or allows a host
+  `SECURITY.md` does not name.
+
+### Changed
+
+- `pfb-claude` nono profile 2.0.0 (spike and specification in
+  `specs/0000-nono-profile-review/`):
+  - the agent uses a GitHub token of its own (classic, `public_repo` and
+    `read:org`), stored in the keychain and added by nono's proxy only to reads,
+    GraphQL, and the creation of issues, pull requests, comments and reviews;
+    the developer's GitHub tokens and gh login stay out of the sandbox;
+  - `github.com` accepts reads and Git fetches only, never a push;
+  - new hosts: `crates.io`, `raw.githubusercontent.com`, `pypi.org`,
+    `files.pythonhosted.org`, `registry.npmjs.org`, `static.crates.io`,
+    `localhost`, `release-assets.githubusercontent.com`,
+    `results-receiver.actions.githubusercontent.com`, and documentation sites;
+    the host list is sorted;
+  - the tools installed by mise, and the Cargo and npm caches, are available in
+    the sandbox; `uvx` installs tools in the cache;
+  - VS Code's configuration is no longer writable from the sandbox, and Git
+    hooks are no longer readable or writable there: commits made in the sandbox
+    skip them;
+  - `SECURITY.md` lists every grant, its reason, and the known gaps.
+- Contributors must create the agent's token (see "The agent's GitHub token" in
+  `README.md`) and run `just install-nono-profiles force`.
+
+### Removed
+
+- The profile's grants on `/Library/Keychains` and `~/.docker` (never effective:
+  the base profile denies them), `~/.config/gh`, and
+  `~/Library/Caches/brokenspoke-analyzer` (already granted by the base).
+
 ## [1.1.0] - 2026-11-06
 
 ### Added
