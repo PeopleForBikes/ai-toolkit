@@ -329,7 +329,7 @@ ai-toolkit/
 │       └── pfb-learning/             # SKILL.md + assets/learning-template.md
 ├── claude/settings/base.json         # shared permission rules + marketplace
 ├── nono/profiles/pfb-claude.json     # organization-wide sandbox profile
-├── scripts/                          # settings merge script, tests, profile checks
+├── scripts/                          # settings merge, profile install, tests
 ├── justfile
 ├── CLAUDE.md (AGENTS.md)             # instructions for AI agents
 ├── CONTRIBUTING.md · SECURITY.md · code-of-conduct.md · LICENSE
