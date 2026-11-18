@@ -1,13 +1,18 @@
 {
   "extends": ["nolabs-ai/claude"],
   "meta": {
-    "name": "claude",
-    "version": "1.0.0",
-    "description": "Claude Code with additional project access"
+    "name": "pfb-claude",
+    "version": "2.0.0",
+    "description": "PeopleForBikes agents: org tools, dedicated GitHub token"
+  },
+  "groups": {
+    "include": ["mise_manager"],
+    "exclude": ["vscode_linux", "vscode_macos"]
   },
   "filesystem": {
-    "read": ["~/.config/gh", "/Library/Keychains", "~/.docker"],
-    "write": ["~/Library/Caches/brokenspoke-analyzer"],
+    "allow": ["~/.local/state/mise", "~/.npm"],
+    "write": ["~/.cargo/git", "~/.cargo/registry"],
+    "deny": ["$WORKDIR/.git/hooks"],
     "suppress_save_prompt": [
       "~/",
       "~/Library/Application Support/Chromium",
@@ -22,6 +27,18 @@
       "/usr"
     ]
   },
+  "environment": {
+    "deny_vars": [
+      "GH_ENTERPRISE_TOKEN",
+      "GH_TOKEN",
+      "GITHUB_ENTERPRISE_TOKEN",
+      "GITHUB_TOKEN"
+    ],
+    "set_vars": {
+      "GH_CONFIG_DIR": "$HOME/.cache/nono/gh",
+      "UV_TOOL_DIR": "$HOME/.cache/uv/tools"
+    }
+  },
   "network": {
     "block": false,
     "allow_http2": true,
@@ -29,19 +46,60 @@
       "127.0.0.1",
       "api.anthropic.com",
       "api.github.com",
+      "code.claude.com",
       "codeload.github.com",
+      "crates.io",
+      "doc.rust-lang.org",
+      "docs.github.com",
+      "docs.rs",
       "download.geofabrik.de",
       "downloads.claude.ai",
-      "github.com",
+      "files.pythonhosted.org",
+      {
+        "domain": "github.com",
+        "endpoints": [
+          { "method": "GET", "path": "/**" },
+          { "method": "HEAD", "path": "/**" },
+          { "method": "POST", "path": "/*/*/git-upload-pack" }
+        ]
+      },
+      "hurl.dev",
       "index.crates.io",
+      "localhost",
       "mcp-proxy.anthropic.com",
+      "mise.jdx.dev",
+      "nono.sh",
       "objects.githubusercontent.com",
       "overpass-api.de",
       "overpass.kumi.systems",
       "overpass.openstreetmap.fr",
       "platform.claude.com",
+      "pypi.org",
+      "raw.githubusercontent.com",
+      "registry.npmjs.org",
+      "release-assets.githubusercontent.com",
+      "results-receiver.actions.githubusercontent.com",
+      "static.crates.io",
       "statsig.anthropic.com"
     ],
+    "credentials": ["github_agent"],
+    "custom_credentials": {
+      "github_agent": {
+        "upstream": "https://api.github.com",
+        "credential_key": "github_agent",
+        "env_var": "GITHUB_TOKEN",
+        "credential_format": "token {}",
+        "endpoint_rules": [
+          { "method": "GET", "path": "/**" },
+          { "method": "POST", "path": "/graphql" },
+          { "method": "POST", "path": "/repos/*/*/issues" },
+          { "method": "POST", "path": "/repos/*/*/issues/*/comments" },
+          { "method": "POST", "path": "/repos/*/*/pulls" },
+          { "method": "POST", "path": "/repos/*/*/pulls/*/comments" },
+          { "method": "POST", "path": "/repos/*/*/pulls/*/reviews" }
+        ]
+      }
+    },
     "open_port": [3000, 5432]
   }
 }
