@@ -45,7 +45,8 @@ just install-nono-profiles
 nono run --profile pfb-claude claude
 ```
 
-Review [SECURITY.md](SECURITY.md) for what the profile grants before installing.
+Review [SECURITY.md](SECURITY.md) for what the profile grants before installing,
+and create [the agent's GitHub token](#the-agents-github-token) first.
 
 ## Agent skills: the `pfb-sdld` plugin
 
@@ -178,6 +179,16 @@ one lesson from the current session.
   published documentation website and must not receive planning material.
 - Optionally mention `specs/learnings/` in `CLAUDE.md` / `AGENTS.md` up front;
   otherwise `pfb-learning` offers to add the line the first time it runs.
+- If agents run in the [nono profile](#nono-profiles), add two lines to
+  `CLAUDE.md` / `AGENTS.md`:
+  - read CI logs with `gh run view` (`--log`, `--log-failed`,
+    `--job <id> --log`), not with `gh api …/actions/jobs/<id>/logs`, which
+    redirects to a storage host the profile blocks;
+  - when `gh` reports it is not logged in, GitHub answers `401 Bad credentials`,
+    or nono's proxy answers `503` with `credential_unavailable`, stop and ask
+    the contributor to set up
+    [the agent's GitHub token](#the-agents-github-token) instead of looking for
+    another way to authenticate.
 
 ### Updating and removing the plugin
 
@@ -249,9 +260,13 @@ rather than one per project: most of them need the same access (Overpass and
 Geofabrik downloads, services on port 3000, PostgreSQL on port 5432), and
 per-project profiles would add overhead for little security gain.
 
-It extends the `nolabs-ai/claude` pack and adds, among others, read access to
-the GitHub CLI login (`~/.config/gh`), `/Library/Keychains` and `~/.docker`.
-Review [SECURITY.md](SECURITY.md) for what it grants before installing.
+It extends the `nolabs-ai/claude` pack and adds a reviewed list of hosts
+(package registries, GitHub, documentation, OpenStreetMap), the tools installed
+by mise, and a GitHub token dedicated to the agent, which nono's proxy adds to
+the agent's requests without the agent ever seeing it. It also keeps the
+developer's own GitHub tokens out of the sandbox, refuses pushes over HTTPS, and
+blocks Git hooks and VS Code's configuration. Review [SECURITY.md](SECURITY.md)
+for what it grants, and the gaps it leaves, before installing.
 
 Install and use it:
 
@@ -266,6 +281,36 @@ nono run --profile pfb-claude claude
 refuses to overwrite a local copy that differs and shows the difference; run
 `just install-nono-profiles force` to overwrite it. Inspect the fully resolved
 policy with `nono profile show pfb-claude`.
+
+### The agent's GitHub token
+
+The agent uses its own GitHub token, never yours. nono reads it from your login
+keychain, outside the sandbox, and adds it only to the GitHub API requests the
+profile allows: reading, GraphQL, and creating issues, pull requests, comments
+and reviews. Inside the sandbox, `GITHUB_TOKEN` holds a placeholder.
+
+1. Create a classic personal access token (GitHub → Settings → Developer
+   settings → Personal access tokens → Tokens (classic)) with only the
+   `public_repo` and `read:org` scopes, and an expiry (90 days is a good
+   default).
+2. Store it in the keychain; the command prompts for the token, so it stays out
+   of your shell history:
+
+   ```console
+   security add-generic-password -s nono -a github_agent -w
+   ```
+
+3. Install the profile (`just install-nono-profiles force` when updating) and
+   restart running sessions.
+
+To rotate the token, store the new one with
+`security add-generic-password -U -s nono -a github_agent -w` and start a new
+session.
+
+Without the token, sessions still start, but `gh` is not logged in inside the
+sandbox: GitHub commands fail until the token exists. The line recommended in
+[Adopting the skills in a project](#adopting-the-skills-in-a-project) makes the
+agent stop and ask you when that happens.
 
 ## Layout
 
@@ -284,7 +329,7 @@ ai-toolkit/
 │       └── pfb-learning/             # SKILL.md + assets/learning-template.md
 ├── claude/settings/base.json         # shared permission rules + marketplace
 ├── nono/profiles/pfb-claude.json     # organization-wide sandbox profile
-├── scripts/                          # settings merge script and its tests
+├── scripts/                          # settings merge script, tests, profile checks
 ├── justfile
 ├── CLAUDE.md (AGENTS.md)             # instructions for AI agents
 ├── CONTRIBUTING.md · SECURITY.md · code-of-conduct.md · LICENSE
