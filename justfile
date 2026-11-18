@@ -1,7 +1,6 @@
 set positional-arguments
 
 claude_base_settings := "claude/settings/base.json"
-nono_profiles_dir := env("XDG_CONFIG_HOME", env("HOME") / ".config") / "nono" / "profiles"
 
 # Meta task running ALL the CI tasks at once.
 ci: lint validate test
@@ -31,24 +30,11 @@ validate-nono-profiles:
 
 # Run the tests of the helper scripts.
 test:
-    python3 -m unittest discover -s scripts -v
+    python3 -m unittest discover -s scripts -p '*.py' -v
 
 # Install the nono profiles. Pass "force" to overwrite modified local copies.
 install-nono-profiles mode="":
-    #!/usr/bin/env bash
-    set -euo pipefail
-    mkdir -p "{{ nono_profiles_dir }}"
-    for src in nono/profiles/*.json; do
-      dest="{{ nono_profiles_dir }}/$(basename "${src}")"
-      if [[ -f "${dest}" ]] && ! cmp -s "${src}" "${dest}" && [[ "{{ mode }}" != "force" ]]; then
-        echo "error: ${dest} differs from ${src}:" >&2
-        diff -u "${dest}" "${src}" >&2 || true
-        echo "Run 'just install-nono-profiles force' to overwrite it." >&2
-        exit 1
-      fi
-      cp "${src}" "${dest}"
-      echo "installed ${dest}"
-    done
+    python3 scripts/install_nono_profiles.py {{ if mode == "force" { "--force" } else if mode == "" { "" } else { error("mode must be empty or \"force\"") } }}
 
 # Merge the shared Claude Code settings into a project's .claude/settings.json.
 sync-claude-settings project:

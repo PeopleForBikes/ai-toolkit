@@ -19,6 +19,12 @@ and this project adheres to
 
 ### Changed
 
+- Each helper script in `scripts/` holds its own unit tests and doctests, and
+  `just test` discovers every `*.py` file there; `test_sync_claude_settings.py`
+  moved into `sync_claude_settings.py`, whose doctests now run too.
+- `just install-nono-profiles` runs `scripts/install_nono_profiles.py` instead
+  of an inline Bash script. It now checks every profile before copying any, so a
+  conflict installs nothing, and treats an empty `XDG_CONFIG_HOME` as unset.
 - `pfb-claude` nono profile 2.0.0 (spike and specification in
   `specs/0000-nono-profile-review/`):
   - the agent uses a GitHub token of its own (classic, `public_repo` and
