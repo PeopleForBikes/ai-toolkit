@@ -27,13 +27,28 @@ Before installing, review what you are opting into:
 
 - **`nono/profiles/pfb-claude.json`**: see
   [The `pfb-claude` nono profile](#the-pfb-claude-nono-profile) below.
-- **`claude/settings/base.json`** only allows read-only `git` and `gh` commands;
-  anything that changes a repository or GitHub asks first, and reading `.env`
-  files, `secrets/`, `curl`, `wget` and `sudo` are denied. It also registers
-  this repository as the `pfb-plugins` marketplace and enables the `pfb-sdld`
-  plugin, so syncing a project offers its skills to everyone who opens it. These
-  rules do not apply when Claude Code runs with `--dangerously-skip-permissions`
-  (`just nono-claude-danger`): in that mode, the nono profile is the only limit.
+- **`claude/settings/base.json`** pre-approves read-only `git` and `gh` commands
+  and `nono why`, asks before the commands it lists that change a repository or
+  GitHub (such as `git push`, `git commit` or `gh pr merge`), and denies reading
+  `.env` files and `secrets/` and running `curl`, `wget` and `sudo`. It also
+  registers this repository as the `pfb-plugins` marketplace and enables the
+  `pfb-sdld` plugin, so syncing a project offers its skills to everyone who
+  opens it.
+  - **With `--dangerously-skip-permissions`** (`just nono-claude-danger`), the
+    deny rules still block and the ask rules still prompt (a run that cannot
+    prompt, such as `claude -p`, refuses the command). Apart from a few built-in
+    safeguards, such as removing the home directory, everything else runs
+    without asking, including commands no rule lists, such as `git tag` or
+    `gh api`.
+  - **These rules are not a security boundary.** They match the command as the
+    agent writes it: the same program started another way (`/usr/bin/curl`,
+    `sh -c '…'`, a script) is not matched, and the `.env` rules do not cover a
+    script that opens the file itself. The nono profile is what limits what the
+    agent can reach.
+
+  See Claude Code's documentation on
+  [permission modes](https://code.claude.com/docs/en/permission-modes) and
+  [permission rules](https://code.claude.com/docs/en/permissions).
 
 ### The `pfb-claude` nono profile
 

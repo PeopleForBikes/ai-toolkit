@@ -52,6 +52,12 @@ and this project adheres to
   the base profile denies them), `~/.config/gh`, and
   `~/Library/Caches/brokenspoke-analyzer` (already granted by the base).
 
+### Fixed
+
+- `SECURITY.md` said that the shared permission rules do not apply with
+  `--dangerously-skip-permissions`. Deny and ask rules do apply in that mode;
+  the section now says so, and that the rules are not a security boundary.
+
 ## [1.1.0] - 2026-11-06
 
 ### Added

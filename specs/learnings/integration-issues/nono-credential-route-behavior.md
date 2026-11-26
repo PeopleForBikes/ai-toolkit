@@ -1,7 +1,7 @@
 ---
 title: How a nono custom credential route behaves, with and without its secret
 date: 2026-11-18
-updated: 2026-11-18
+updated: 2026-11-25
 category: integration-issues
 status: active
 tags: [nono, credentials, github, token, proxy, keychain]
@@ -10,6 +10,7 @@ spec: specs/0000-nono-profile-review
 related:
   - specs/0000-nono-profile-review/findings.md
   - specs/learnings/integration-issues/testing-a-github-push-block-in-nono.md
+  - specs/learnings/integration-issues/claude-code-login-without-keychain-in-nono.md
 superseded_by:
 ---
 
